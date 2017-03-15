@@ -31,6 +31,7 @@ using Serilog;
 using Serilog.Events;
 using Bit.Api.IdentityServer;
 using Bit.Core.Enums;
+using System.Diagnostics;
 
 namespace Bit.Api
 {
@@ -211,6 +212,10 @@ namespace Bit.Api
             IApplicationLifetime appLifetime,
             GlobalSettings globalSettings)
         {
+            var sourceSwitch = new SourceSwitch("DefaultSourceSwitch");
+            sourceSwitch.Level = SourceLevels.Warning;
+            loggerFactory.AddTraceSource(sourceSwitch, new TextWriterTraceListener(writer: Console.Out));
+
             if(env.IsProduction())
             {
                 Func<LogEvent, bool> serilogFilter = (e) =>

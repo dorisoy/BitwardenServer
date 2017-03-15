@@ -19,12 +19,13 @@
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0",
     "Microsoft.Extensions.Configuration.Binder": "1.1.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.0",
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.2",
+    "Microsoft.ApplicationInsights.AspNetCore": "2.0.0",
     "AspNetCoreRateLimit": "1.0.5",
     "Serilog.Extensions.Logging": "1.3.1",
     "Serilog.Sinks.AzureDocumentDb": "3.5.17",
     "IdentityServer4": "1.0.1",
-    "IdentityServer4.AccessTokenValidation": "1.0.2"
+    "IdentityServer4.AccessTokenValidation": "1.0.2",
+    "Microsoft.Extensions.Logging.TraceSource": "1.0.2"
   },
 
   "tools": {

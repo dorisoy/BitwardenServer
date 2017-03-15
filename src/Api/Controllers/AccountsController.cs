@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Bit.Core.Domains;
 using Bit.Core.Enums;
 using System.Linq;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace Bit.Api.Controllers
 {
@@ -19,15 +21,17 @@ namespace Bit.Api.Controllers
         private readonly IUserService _userService;
         private readonly ICipherService _cipherService;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<AccountsController> _logger;
 
         public AccountsController(
             IUserService userService,
             ICipherService cipherService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            ILogger<AccountsController> logger)
         {
             _userService = userService;
             _cipherService = cipherService;
-            _userManager = userManager;
+            _logger = logger;
         }
 
         [HttpPost("register")]
@@ -173,6 +177,9 @@ namespace Bit.Api.Controllers
         public async Task<long?> GetAccountRevisionDate()
         {
             var userId = _userService.GetProperUserId(User);
+
+            _logger.LogWarning("GetAccountRevisionDate for " + userId);
+
             long? revisionDate = null;
             if(userId.HasValue)
             {
