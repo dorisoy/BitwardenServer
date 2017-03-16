@@ -103,6 +103,7 @@ namespace Bit.Api
             })
                 .AddInMemoryApiResources(ApiResources.GetApiResources())
                 .AddInMemoryClients(Clients.GetClients());
+            services.AddTransient<ICorsPolicyService, AllowAllCorsPolicyService>();
 
             if(Environment.IsProduction())
             {
@@ -179,7 +180,8 @@ namespace Bit.Api
             services.AddSingleton<IMailService, SendGridMailService>();
             services.AddSingleton<ICipherService, CipherService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IPushService, PushSharpPushService>();
+            //services.AddScoped<IPushService, PushSharpPushService>();
+            services.AddScoped<IPushService, NoopPushService>();
             services.AddScoped<IDeviceService, DeviceService>();
             services.AddScoped<IBlockIpService, AzureQueueBlockIpService>();
 

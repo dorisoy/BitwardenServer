@@ -6,17 +6,21 @@ using Bit.Core.Domains;
 using Bit.Core.Repositories;
 using IdentityServer4.Models;
 using IdentityServer4.Stores;
+using Microsoft.Extensions.Logging;
 
 namespace Bit.Api.IdentityServer
 {
     public class PersistedGrantStore : IPersistedGrantStore
     {
         private readonly IGrantRepository _grantRepository;
+        private readonly ILogger<PersistedGrantStore> _logger;
 
         public PersistedGrantStore(
-            IGrantRepository grantRepository)
+            IGrantRepository grantRepository,
+            ILogger<PersistedGrantStore> logger)
         {
             _grantRepository = grantRepository;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<PersistedGrant>> GetAllAsync(string subjectId)
@@ -31,6 +35,7 @@ namespace Bit.Api.IdentityServer
             var grant = await _grantRepository.GetByKeyAsync(key);
             if(grant == null)
             {
+                _logger.LogWarning("Grant not found with key: " + key);
                 return null;
             }
 
