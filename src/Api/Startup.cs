@@ -180,8 +180,7 @@ namespace Bit.Api
             services.AddSingleton<IMailService, SendGridMailService>();
             services.AddSingleton<ICipherService, CipherService>();
             services.AddScoped<IUserService, UserService>();
-            //services.AddScoped<IPushService, PushSharpPushService>();
-            services.AddScoped<IPushService, NoopPushService>();
+            services.AddScoped<IPushService, PushSharpPushService>();
             services.AddScoped<IDeviceService, DeviceService>();
             services.AddScoped<IBlockIpService, AzureQueueBlockIpService>();
 
