@@ -43,19 +43,25 @@ namespace Bit.Api.IdentityServer
             return pGrant;
         }
 
-        public async Task RemoveAllAsync(string subjectId, string clientId)
+        public Task RemoveAllAsync(string subjectId, string clientId)
         {
-            await _grantRepository.DeleteAsync(subjectId, clientId);
+            _logger.LogWarning($"RemoveAllAsync: {subjectId} {clientId}");
+            return Task.FromResult(0);
+            //await _grantRepository.DeleteAsync(subjectId, clientId);
         }
 
-        public async Task RemoveAllAsync(string subjectId, string clientId, string type)
+        public Task RemoveAllAsync(string subjectId, string clientId, string type)
         {
-            await _grantRepository.DeleteAsync(subjectId, clientId, type);
+            _logger.LogWarning($"RemoveAllAsync: {subjectId} {clientId}, {type}");
+            return Task.FromResult(0);
+            //await _grantRepository.DeleteAsync(subjectId, clientId, type);
         }
 
-        public async Task RemoveAsync(string key)
+        public Task RemoveAsync(string key)
         {
-            await _grantRepository.DeleteAsync(key);
+            _logger.LogWarning($"RemoveAsync: {key}");
+            return Task.FromResult(0);
+            //await _grantRepository.DeleteAsync(key);
         }
 
         public async Task StoreAsync(PersistedGrant pGrant)
