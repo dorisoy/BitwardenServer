@@ -11,6 +11,7 @@ using Serilog.Events;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.AspNetCore.HttpOverrides;
+using Bit.Billing.Utilities;
 
 namespace Bit.Billing
 {
@@ -43,6 +44,9 @@ namespace Bit.Billing
             // Context
             services.AddScoped<CurrentContext>();
 
+            // Identity
+            services.AddCustomIdentityServices(globalSettings);
+
             // Services
             services.AddBaseServices();
             services.AddDefaultServices();
@@ -50,7 +54,10 @@ namespace Bit.Billing
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // Mvc
-            services.AddMvc();
+            services.AddMvc(config =>
+            {
+                config.Filters.Add(new ExceptionHandlerFilterAttribute());
+            });
         }
 
         public void Configure(
