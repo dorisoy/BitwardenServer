@@ -1,5 +1,4 @@
-﻿#if NET461
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Bit.Core.Models.Table;
 using Microsoft.Azure.NotificationHubs;
@@ -179,4 +178,3 @@ namespace Bit.Core.Services
         }
     }
 }
-#endif

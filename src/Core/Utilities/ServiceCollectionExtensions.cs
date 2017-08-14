@@ -15,9 +15,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NET461
 using Microsoft.WindowsAzure.Storage;
-#endif
 using System;
 using System.IO;
 using SqlServerRepos = Bit.Core.Repositories.SqlServer;
@@ -88,13 +86,11 @@ namespace Bit.Core.Utilities
                 services.AddSingleton<IPushNotificationService, RelayPushNotificationService>();
                 services.AddSingleton<IPushRegistrationService, RelayPushRegistrationService>();
             }
-#if NET461
             else if(!globalSettings.SelfHosted)
             {
                 services.AddSingleton<IPushNotificationService, NotificationHubPushNotificationService>();
                 services.AddSingleton<IPushRegistrationService, NotificationHubPushRegistrationService>();
             }
-#endif
             else
             {
                 services.AddSingleton<IPushNotificationService, NoopPushNotificationService>();
@@ -246,7 +242,6 @@ namespace Bit.Core.Utilities
                     .PersistKeysToFileSystem(new DirectoryInfo(globalSettings.DataProtection.Directory));
             }
 
-#if NET461
             if(!globalSettings.SelfHosted)
             {
                 var dataProtectionCert = CoreHelpers.GetCertificate(globalSettings.DataProtection.CertificateThumbprint);
@@ -255,7 +250,6 @@ namespace Bit.Core.Utilities
                     .PersistKeysToAzureBlobStorage(storageAccount, "aspnet-dataprotection/keys.xml")
                     .ProtectKeysWithCertificate(dataProtectionCert);
             }
-#endif
         }
 
         public static GlobalSettings AddGlobalSettingsServices(this IServiceCollection services,

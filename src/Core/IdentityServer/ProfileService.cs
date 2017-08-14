@@ -5,9 +5,7 @@ using Bit.Core.Repositories;
 using Bit.Core.Services;
 using System.Security.Claims;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Builder;
 using System.Linq;
-using Microsoft.Extensions.Options;
 using System;
 using IdentityModel;
 
@@ -18,21 +16,15 @@ namespace Bit.Core.IdentityServer
         private readonly IUserService _userService;
         private readonly IUserRepository _userRepository;
         private readonly IOrganizationUserRepository _organizationUserRepository;
-        private readonly ILicensingService _licensingService;
-        private IdentityOptions _identityOptions;
 
         public ProfileService(
             IUserRepository userRepository,
             IUserService userService,
-            IOrganizationUserRepository organizationUserRepository,
-            ILicensingService licensingService,
-            IOptions<IdentityOptions> identityOptionsAccessor)
+            IOrganizationUserRepository organizationUserRepository)
         {
             _userRepository = userRepository;
             _userService = userService;
             _organizationUserRepository = organizationUserRepository;
-            _licensingService = licensingService;
-            _identityOptions = identityOptionsAccessor?.Value ?? new IdentityOptions();
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -43,13 +35,12 @@ namespace Bit.Core.IdentityServer
             var user = await _userService.GetUserByPrincipalAsync(context.Subject);
             if(user != null)
             {
-                var isPremium = await _licensingService.ValidateUserPremiumAsync(user);
                 newClaims.AddRange(new List<Claim>
                 {
-                    new Claim("premium", isPremium ? "true" : "false", ClaimValueTypes.Boolean),
+                    new Claim("premium", user.Premium ? "true" : "false", ClaimValueTypes.Boolean),
                     new Claim(JwtClaimTypes.Email, user.Email),
                     new Claim(JwtClaimTypes.EmailVerified, user.EmailVerified ? "true" : "false", ClaimValueTypes.Boolean),
-                    new Claim(_identityOptions.ClaimsIdentity.SecurityStampClaimType, user.SecurityStamp)
+                    new Claim("sstamp", user.SecurityStamp)
                 });
 
                 if(!string.IsNullOrWhiteSpace(user.Name))
@@ -107,8 +98,7 @@ namespace Bit.Core.IdentityServer
 
         public async Task IsActiveAsync(IsActiveContext context)
         {
-            var securityTokenClaim = context.Subject?.Claims.FirstOrDefault(c =>
-                c.Type == _identityOptions.ClaimsIdentity.SecurityStampClaimType);
+            var securityTokenClaim = context.Subject?.Claims.FirstOrDefault(c => c.Type == "sstamp");
             var user = await _userService.GetUserByPrincipalAsync(context.Subject);
 
             if(user != null && securityTokenClaim != null)
