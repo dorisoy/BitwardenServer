@@ -1,5 +1,4 @@
-﻿#if NET461
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.NotificationHubs;
 using Bit.Core.Enums;
@@ -145,4 +144,3 @@ namespace Bit.Core.Services
         }
     }
 }
-#endif
