@@ -69,7 +69,6 @@
     <PackageReference Include="Otp.NET" Version="1.0.1" />
     <PackageReference Include="YubicoDotNetClient" Version="1.2.0" />
     <PackageReference Include="Microsoft.Azure.NotificationHubs" Version="1.0.8" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
   </ItemGroup>
   
   <ItemGroup>
