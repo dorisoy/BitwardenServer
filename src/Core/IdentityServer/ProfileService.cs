@@ -92,7 +92,7 @@ namespace Bit.Core.IdentityServer
             newClaims.AddRange(existingClaimsToKeep);
             if(newClaims.Any())
             {
-                context.AddFilteredClaims(newClaims);
+                context.AddRequestedClaims(newClaims);
             }
         }
 

@@ -200,7 +200,7 @@ namespace Bit.Core.Utilities
 
             if(env.IsDevelopment())
             {
-                identityServerBuilder.AddTemporarySigningCredential();
+                identityServerBuilder.AddDeveloperSigningCredential();
             }
             else if(!string.IsNullOrWhiteSpace(globalSettings.IdentityServer.CertificatePassword)
                 && File.Exists("identity.pfx"))
