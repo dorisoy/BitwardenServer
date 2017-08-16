@@ -19,6 +19,8 @@ using Serilog.Events;
 using Stripe;
 using Bit.Core.Utilities;
 using IdentityModel;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
 
 namespace Bit.Api
 {
@@ -99,6 +101,16 @@ namespace Bit.Api
                 });
             });
 
+            services.AddAuthentication(o =>
+            {
+                o.DefaultScheme = "Bearer";
+                //o.AddScheme("Bearer3", b => b.Build());
+            })
+            .AddJwtBearer(o =>
+            {
+                SetJwtOptions(o, globalSettings);
+            });
+
             services.AddScoped<AuthenticatorTokenProvider>();
 
             // Services
@@ -176,9 +188,9 @@ namespace Bit.Api
             // Add Cors
             app.UseCors("All");
 
-            // Add IdentityServer to the request pipeline.
-            app.UseIdentityServerAuthentication(GetIdentityOptions(env, globalSettings, string.Empty));
-            app.UseIdentityServerAuthentication(GetIdentityOptions(env, globalSettings, "3"));
+            // Add authentication to the request pipeline.
+            app.UseAuthentication()
+                .AllowScopes(new string[] { "api", "api.push" });
 
             // Add current context
             app.UseMiddleware<CurrentContextMiddleware>();
@@ -187,21 +199,40 @@ namespace Bit.Api
             app.UseMvc();
         }
 
-        private IdentityServerAuthenticationOptions GetIdentityOptions(IHostingEnvironment env,
-            GlobalSettings globalSettings, string suffix)
+        private void SetJwtOptions(JwtBearerOptions options, GlobalSettings globalSettings)
         {
-            var options = new IdentityServerAuthenticationOptions
+            if(!string.IsNullOrWhiteSpace(globalSettings.BaseServiceUri.InternalIdentity))
             {
-                Authority = globalSettings.BaseServiceUri.InternalIdentity,
-                AllowedScopes = new string[] { "api", "api.push" },
-                RequireHttpsMetadata = !env.IsDevelopment() && globalSettings.BaseServiceUri.InternalIdentity.StartsWith("https"),
-                NameClaimType = ClaimTypes.Email,
-                // Suffix until we retire the old jwt schemes.
-                AuthenticationScheme = $"Bearer{suffix}",
-                TokenRetriever = TokenRetrieval.FromAuthorizationHeaderOrQueryString($"Bearer{suffix}", $"access_token{suffix}")
-            };
+                options.Authority = globalSettings.BaseServiceUri.InternalIdentity;
+            }
+            else
+            {
+                options.Authority = globalSettings.BaseServiceUri.Identity;
+            }
 
-            return options;
+            options.RequireHttpsMetadata = options.Authority.StartsWith("https");
+            options.TokenValidationParameters.ValidateAudience = false;
+            options.RefreshOnIssuerKeyNotFound = true;
+            options.SaveToken = true;
+            options.BackchannelTimeout = TimeSpan.FromSeconds(60);
+            options.TokenValidationParameters.NameClaimType = JwtClaimTypes.Email;
+            options.TokenValidationParameters.RoleClaimType = JwtClaimTypes.Role;
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = (e) =>
+                {
+                    if(e.Scheme.Equals("Bearer"))
+                    {
+                        e.Token = TokenRetrieval.FromAuthorizationHeaderOrQueryString(e.Request);
+                    }
+                    else if(e.Scheme.Equals("Bearer3"))
+                    {
+                        e.Token = TokenRetrieval.FromAuthorizationHeaderOrQueryString(e.Request, "Bearer3", "access_token3");
+                    }
+                    return Task.FromResult(0);
+                }
+            };
         }
     }
 }

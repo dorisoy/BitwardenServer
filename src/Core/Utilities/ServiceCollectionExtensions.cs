@@ -191,8 +191,16 @@ namespace Bit.Core.Utilities
                     options.Endpoints.EnableUserInfoEndpoint = false;
                     options.Endpoints.EnableCheckSessionEndpoint = false;
                     options.Endpoints.EnableTokenRevocationEndpoint = false;
-                    options.IssuerUri = globalSettings.BaseServiceUri.InternalIdentity;
                     options.Caching.ClientStoreExpiration = new TimeSpan(0, 5, 0);
+
+                    if(!string.IsNullOrWhiteSpace(globalSettings.BaseServiceUri.InternalIdentity))
+                    {
+                        options.IssuerUri = globalSettings.BaseServiceUri.InternalIdentity;
+                    }
+                    else
+                    {
+                        options.IssuerUri = globalSettings.BaseServiceUri.Identity;
+                    }
                 })
                 .AddInMemoryCaching()
                 .AddInMemoryApiResources(ApiResources.GetApiResources())
