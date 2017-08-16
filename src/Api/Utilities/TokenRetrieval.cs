@@ -6,25 +6,22 @@ namespace Bit.Api.Utilities
 {
     public static class TokenRetrieval
     {
-        public static Func<HttpRequest, string> FromAuthorizationHeaderOrQueryString(string headerScheme = "Bearer",
+        public static string FromAuthorizationHeaderOrQueryString(HttpRequest request, string headerScheme = "Bearer",
             string qsName = "access_token")
         {
-            return (request) =>
+            string authorization = request.Headers["Authorization"].FirstOrDefault();
+
+            if(string.IsNullOrWhiteSpace(authorization))
             {
-                string authorization = request.Headers["Authorization"].FirstOrDefault();
+                return request.Query[qsName].FirstOrDefault();
+            }
 
-                if(string.IsNullOrWhiteSpace(authorization))
-                {
-                    return request.Query[qsName].FirstOrDefault();
-                }
+            if(authorization.StartsWith(headerScheme + " ", StringComparison.OrdinalIgnoreCase))
+            {
+                return authorization.Substring(headerScheme.Length + 1).Trim();
+            }
 
-                if(authorization.StartsWith(headerScheme + " ", StringComparison.OrdinalIgnoreCase))
-                {
-                    return authorization.Substring(headerScheme.Length + 1).Trim();
-                }
-
-                return null;
-            };
+            return null;
         }
     }
 }
