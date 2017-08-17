@@ -38,6 +38,7 @@ namespace Bit.Core.IdentityServer
             var user = await _userService.GetUserByPrincipalAsync(context.Subject);
             if(user != null)
             {
+                var isPremium = await _licensingService.ValidateUserPremiumAsync(user);
                 newClaims.AddRange(new List<Claim>
                 {
                     new Claim("premium", isPremium ? "true" : "false", ClaimValueTypes.Boolean),
