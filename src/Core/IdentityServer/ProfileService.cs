@@ -41,7 +41,7 @@ namespace Bit.Core.IdentityServer
                 var isPremium = await _licensingService.ValidateUserPremiumAsync(user);
                 newClaims.AddRange(new List<Claim>
                 {
-                    new Claim("premium", isPremium? "true" : "false", ClaimValueTypes.Boolean),
+                    new Claim("premium", isPremium ? "true" : "false", ClaimValueTypes.Boolean),
                     new Claim(JwtClaimTypes.Email, user.Email),
                     new Claim(JwtClaimTypes.EmailVerified, user.EmailVerified ? "true" : "false", ClaimValueTypes.Boolean),
                     new Claim("sstamp", user.SecurityStamp)
