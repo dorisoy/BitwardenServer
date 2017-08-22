@@ -61,7 +61,7 @@ namespace Bit.Core.Utilities
                 services.AddSingleton<IMailService, RazorMailService>();
             }
 
-            services.AddSingleton<ILicensingService, RsaLicensingService>();
+            services.AddSingleton<ILicensingService, LicensingService>();
 
             if(CoreHelpers.SettingHasValue(globalSettings.Mail.SendGridApiKey))
             {
