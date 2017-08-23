@@ -81,14 +81,14 @@ namespace Bit.Api
             {
                 config.AddPolicy("Application", policy =>
                 {
-                    policy.AddAuthenticationSchemes("Bearer", "Bearer3");
+                    //policy.AddAuthenticationSchemes("Bearer"/*, "Bearer3"*/);
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim(JwtClaimTypes.AuthenticationMethod, "Application");
-                    policy.RequireClaim(JwtClaimTypes.Scope, "api");
+                    //policy.RequireClaim(JwtClaimTypes.AuthenticationMethod, "Application");
+                    //policy.RequireClaim(JwtClaimTypes.Scope, "api");
                 });
                 config.AddPolicy("Web", policy =>
                 {
-                    policy.AddAuthenticationSchemes("Bearer", "Bearer3");
+                    policy.AddAuthenticationSchemes("Bearer"/*, "Bearer3"*/);
                     policy.RequireAuthenticatedUser();
                     policy.RequireClaim(JwtClaimTypes.AuthenticationMethod, "Application");
                     policy.RequireClaim(JwtClaimTypes.Scope, "api");
@@ -103,7 +103,7 @@ namespace Bit.Api
 
             services.AddAuthentication(o =>
             {
-                o.DefaultScheme = "Bearer";
+                //o.DefaultScheme = "Bearer";
                 //o.AddScheme("Bearer3", b => b.Build());
             })
             .AddJwtBearer(o =>
@@ -189,8 +189,8 @@ namespace Bit.Api
             app.UseCors("All");
 
             // Add authentication to the request pipeline.
-            app.UseAuthentication()
-                .AllowScopes(new string[] { "api", "api.push" });
+            app.UseAuthentication();
+                //.AllowScopes(new string[] { "api", "api.push" });
 
             // Add current context
             app.UseMiddleware<CurrentContextMiddleware>();
@@ -222,11 +222,11 @@ namespace Bit.Api
             {
                 OnMessageReceived = (e) =>
                 {
-                    if(e.Scheme.Equals("Bearer"))
+                    if(e.Scheme.Name.Equals("Bearer"))
                     {
                         e.Token = TokenRetrieval.FromAuthorizationHeaderOrQueryString(e.Request);
                     }
-                    else if(e.Scheme.Equals("Bearer3"))
+                    else if(e.Scheme.Name.Equals("Bearer3"))
                     {
                         e.Token = TokenRetrieval.FromAuthorizationHeaderOrQueryString(e.Request, "Bearer3", "access_token3");
                     }
