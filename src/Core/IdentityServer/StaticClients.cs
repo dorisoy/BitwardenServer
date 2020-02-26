@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityServer4;
+using IdentityServer4.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,7 +30,7 @@ namespace Bit.Core.IdentityServer
             {
                 ClientId = id;
                 RequireClientSecret = false;
-                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword;
+                AllowedGrantTypes = new List<string> { GrantType.ResourceOwnerPassword, GrantType.AuthorizationCode };
                 RefreshTokenExpiration = TokenExpiration.Sliding;
                 RefreshTokenUsage = TokenUsage.ReUse;
                 SlidingRefreshTokenLifetime = 86400 * refreshTokenSlidingDays;
@@ -37,12 +38,27 @@ namespace Bit.Core.IdentityServer
                 UpdateAccessTokenClaimsOnRefresh = true;
                 AccessTokenLifetime = 3600 * accessTokenLifetimeHours;
                 AllowOfflineAccess = true;
+                RequireConsent = false;
+                RequirePkce = true;
+                EnableLocalLogin = false;
 
-                if (scopes == null)
+                RedirectUris = new string[] { "http://localhost:5003/callback.html" };
+                PostLogoutRedirectUris = new string[] { "http://localhost:5003/index.html" };
+                AllowedCorsOrigins = new string[] { "http://localhost:5003" };
+
+                var allowedScopes = new List<string>
                 {
-                    scopes = new string[] { "api" };
+                    IdentityServerConstants.StandardScopes.OpenId
+                };
+                if(scopes == null)
+                {
+                    allowedScopes.Add("api");
                 }
-                AllowedScopes = scopes;
+                else
+                {
+                    allowedScopes.AddRange(scopes);
+                }
+                AllowedScopes = allowedScopes;
             }
         }
     }
