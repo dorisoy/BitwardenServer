@@ -1249,6 +1249,11 @@ namespace Bit.Core.Services
             }
 
             await _organizationUserRepository.DeleteAsync(orgUser);
+            if (orgUser.UserId.HasValue)
+            {
+                // Cleanup org user associations
+                await _ssoUserRepository.DeleteAsync(orgUser.UserId.Value, organizationId);
+            }
             await _eventService.LogOrganizationUserEventAsync(orgUser, EventType.OrganizationUser_Removed);
 
             if (orgUser.UserId.HasValue)
@@ -1276,6 +1281,11 @@ namespace Bit.Core.Services
             }
 
             await _organizationUserRepository.DeleteAsync(orgUser);
+            if (orgUser.UserId.HasValue)
+            {
+                // Cleanup org user associations
+                await _ssoUserRepository.DeleteAsync(orgUser.UserId.Value, organizationId);
+            }
             await _eventService.LogOrganizationUserEventAsync(orgUser, EventType.OrganizationUser_Removed);
 
             if (orgUser.UserId.HasValue)
