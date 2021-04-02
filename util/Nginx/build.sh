@@ -13,4 +13,4 @@ docker build -t bitwarden/nginx "$DIR/."
 echo -e "\n## Building k8s-proxy"
 
 echo -e "\nBuilding docker image"
-docker build -f $DIR/Dockerfile-k8s -t bitwarden/k8s-proxy "$DIR/."
+docker build -f $DIR/k8s.Dockerfile -t bitwarden/k8s-proxy "$DIR/."
